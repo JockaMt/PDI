@@ -17,10 +17,10 @@ Aplicativo Python completo para análise de imagens de satélite detectando padr
 - ✅ Detecção de vórtices por Hough Circles com validação física
 - ✅ Análise de cores (verde/vermelho para tempestades)
 - ✅ Análise de textura e turbulência
-- ✅ **Detecção por Deep Learning YOLO** (novo!)
+- ✅ Detecção por Deep Learning YOLO
 
-### 🤖 Deep Learning Integration (NOVO!)
-- ✅ Modelo YOLOv8n pré-treinado
+### 🤖 Deep Learning Integration
+- ✅ Modelo YOLO12n pré-treinado
 - ✅ Detecção de objetos com confiança
 - ✅ Filtro para formas circulares
 - ✅ Confirmação mútua com métodos clássicos
@@ -34,27 +34,17 @@ Aplicativo Python completo para análise de imagens de satélite detectando padr
 - ✅ Página 3: Visualizações YOLO com bounding boxes
 - ✅ Página 4: Histogramas e distribuições
 
-### 🌙 Inteligência de Ambiente
-- ✅ Detecção automática dia/noite
-- ✅ Ajustes de limiares por período
-- ✅ Scoring adaptativo
-
-### 🏗️ Arquitetura Profissional
+### 🏗️ Arquitetura
 - ✅ Padrão MVC (Model-View-Controller)
 - ✅ Interface Tkinter moderna com sv-ttk
 - ✅ Threading para não travar UI
-- ✅ Tratamento robusto de erros
 
 ## 🚀 Quick Start
 
 ### 1. Instalar Dependências
 
 ```powershell
-# Dependências básicas (necessárias)
-pip install opencv-python numpy matplotlib pillow
-
-# YOLO e Deep Learning (opcional mas recomendado)
-pip install ultralytics torch torchvision
+pip install -r ./requirements.txt
 ```
 
 ### 2. Executar Aplicação
@@ -209,7 +199,7 @@ Contar e armazenar confiança
 - Vórtices + Escuridão: +15
 - Múltiplos padrões de rotação: +10
 - Tripla ameaça (contraste + escuridão + rotação): +20
-- YOLO confirmando padrões: +10 ← NOVO
+- YOLO confirmando padrões: +10
 ```
 
 ### Normalização
@@ -228,25 +218,13 @@ Classificação:
 
 ## 🔧 Configuração
 
-### Instalar YOLO (Recomendado)
-
-```powershell
-# CPU (compatível com qualquer máquina)
-pip install ultralytics torch torchvision
-
-# GPU NVIDIA (mais rápido - opcional)
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-pip install ultralytics
-```
-
 ### Ajustar Parâmetros
 
 Editar em `model.py`:
 
 ```python
 # Linha ~500: Modelo YOLO
-model = YOLO('yolov8n.pt')  # nano (rápido, padrão)
-# model = YOLO('yolov8s.pt')  # small (mais preciso)
+model = YOLO('yolo12n.pt')
 
 # Linha ~516: Filtro de circularidade
 if 0.7 < aspect_ratio < 1.4:  # ajustar intervalo
@@ -256,33 +234,6 @@ yolo_score = min(yolo_circular * 5, 15)  # ajustar multiplicador
 ```
 
 ## 📈 Exemplo de Saída
-
-### Console
-```
-=== ANÁLISE DE IMAGEM ===
-Imagem carregada: satellite_storm.jpg
-Período detectado: Dia (brilho médio: 145.3)
-
-Analisando padrões de nuvens com rigor...
-  ✓ 1 padrão circular detectado (circularity: 0.78)
-  ✓ 2 vórtices por Hough Circles
-  ✓ Validação física bem-sucedida
-
-Executando detecção com YOLO...
-  ✓ YOLO: Objeto circular detectado (conf=0.82, aspect=0.95)
-  ✓ YOLO: Objeto circular detectado (conf=0.76, aspect=1.08)
-  YOLO: 4 objetos detectados, 2 circulares
-
-Calculando índice de risco...
-  + Padrões circulares: 15 pts
-  + Vórtices: 24 pts
-  + YOLO: 10 pts
-  + BÔNUS: Vórtices + escuridão: 15 pts
-  + BÔNUS: YOLO confirmou: 10 pts
-
-🎯 Pontuação Final: 87/100
-🔴 NÍVEL: CRÍTICO - POSSÍVEL TORNADO
-```
 
 ### PDF Gerado
 
@@ -327,62 +278,9 @@ Soluções:
 - Usar YOLOv8n (padrão é rápido)
 ```
 
-## 📚 Documentação Completa
-
-- **YOLO_SETUP.md** - Guia detalhado de instalação
-- **YOLO_IMPLEMENTATION_SUMMARY.md** - Mudanças e integração
-- **TESTING_GUIDE.md** - Como testar cada funcionalidade
-- **IMPLEMENTATION_CHECKLIST.md** - Checklist de features
-
 ## 🎓 Requisitos
 
-- Python 3.10+
+- Python 3.10+ < 3.14
 - Windows 7+, Mac OS 10.13+, Linux
 - RAM: 2 GB mínimo (4 GB recomendado com YOLO)
 - Espaço em disco: 500 MB (com YOLO: 1 GB)
-
-## 📦 Dependências
-
-```
-opencv-python>=4.5.0
-numpy>=1.20.0
-matplotlib>=3.3.0
-pillow>=8.0.0
-ultralytics>=8.0.0  # Opcional (YOLO)
-torch>=2.0.0        # Opcional (YOLO backend)
-torchvision>=0.15.0 # Opcional (YOLO backend)
-```
-
-## 🤝 Contribuições
-
-Para reportar bugs ou sugerir melhorias:
-1. Teste com múltiplas imagens
-2. Documente comportamento esperado vs atual
-3. Inclua logs de console
-4. Envie PDF gerado se possível
-
-## 📝 Histórico de Versões
-
-### v1.0 (Atual)
-- ✅ Métodos clássicos de detecção
-- ✅ Integração YOLO
-- ✅ Scoring combinado
-- ✅ Relatórios em PDF
-- ✅ Interface Tkinter moderna
-- ✅ Detecção dia/noite
-
-## 📄 Licença
-
-Este projeto é fornecido como está, para fins educacionais e de pesquisa.
-
-## 👤 Desenvolvedor
-
-Desenvolvido com ❤️ para análise meteorológica avançada.
-
----
-
-**Última Atualização**: 2024
-**Versão Atual**: 1.0
-**Status**: ✅ Produção Pronto
-
-Para mais informações, consulte a documentação incluída no projeto.
