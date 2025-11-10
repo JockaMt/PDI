@@ -1,4 +1,6 @@
-# 🌪️ Analisador de Risco de Tornado com Deep Learning YOLO
+# 🌪️ Analisador de Risco de Tornado com processamento de imagens e Deep Learning YOLO
+
+Vídeo: https://www.youtube.com/watch?v=tm8MDu5Z9E0
 
 ## 📋 Visão Geral
 
