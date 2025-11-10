@@ -3,6 +3,7 @@ Controller - Lógica de controle para o analisador de tornado
 """
 
 import threading
+import os
 from model import TornadoRiskAnalyzer
 
 
@@ -63,13 +64,44 @@ class TornadoController:
     def display_results(self, risk_score, risk_level, metrics):
         """Exibe os resultados na view"""
         self.view.display_results(risk_score, risk_level, metrics)
+        self.view.update_ui_state(analysis_complete=True)
 
     def generate_pdf_report(self, output_path):
-        """Gera relatório PDF"""
+        """Gera relatório PDF em thread separada"""
         if not self.analyzer:
             return
 
+        # Desabilita botão durante geração
+        self.view.update_ui_state(generating_pdf=True)
+        
+        # Executa em thread separada para não travar a UI
+        thread = threading.Thread(target=self.run_pdf_generation, args=(output_path,))
+        thread.daemon = True
+        thread.start()
+
+    def run_pdf_generation(self, output_path):
+        """Executa a geração do PDF em thread separada"""
         try:
-            self.analyzer.generate_pdf_report(output_path)
+            self.view.root.after(0, lambda: self.view.status_label.config(text="Gerando PDF..."))
+            
+            # Usa caminho absoluto se não for relativo
+            if not os.path.isabs(output_path):
+                output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), output_path)
+            
+            # Gera PDF
+            result = self.analyzer.generate_pdf_report(output_path)
+            
+            # Atualiza UI na thread principal
+            self.view.root.after(0, lambda: self.view.show_success(
+                "Sucesso", 
+                f"Relatório PDF gerado com sucesso!\n\nLocal: {output_path}"
+            ))
+            self.view.root.after(0, lambda: self.view.status_label.config(text="PDF gerado com sucesso!"))
+            
         except Exception as e:
-            raise e
+            self.view.root.after(0, lambda: self.view.show_error("Erro", f"Erro ao gerar PDF: {e}"))
+            self.view.root.after(0, lambda: self.view.status_label.config(text=f"Erro: {str(e)[:50]}"))
+        
+        finally:
+            # Re-habilita botão
+            self.view.root.after(0, lambda: self.view.update_ui_state())

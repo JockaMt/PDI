@@ -363,19 +363,17 @@ class TornadoAnalyzerGUI:
             pass  # Ignora erros se o canvas não estiver pronto
 
     def generate_pdf(self):
-        """Gera relatório PDF"""
+        """Gera relatório PDF em thread separada"""
         if not hasattr(self.controller, 'analyzer') or not self.controller.analyzer:
+            messagebox.showwarning("Aviso", "Realize uma análise primeiro!")
             return
 
         output_name = f"relatorio_tornado_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
 
-        try:
-            self.controller.generate_pdf_report(output_name)
-            messagebox.showinfo("Sucesso", f"Relatório PDF gerado: {output_name}")
-        except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao gerar PDF: {e}")
+        # Chama controller para gerar em thread
+        self.controller.generate_pdf_report(output_name)
 
-    def update_ui_state(self, image_loaded=False, analyzing=False, analysis_complete=False):
+    def update_ui_state(self, image_loaded=False, analyzing=False, analysis_complete=False, generating_pdf=False):
         """Atualiza o estado da interface"""
         if image_loaded:
             self.analyze_btn.config(state=tk.NORMAL)
@@ -391,15 +389,28 @@ class TornadoAnalyzerGUI:
 
         elif analyzing:
             self.analyze_btn.config(state=tk.DISABLED)
+            self.pdf_btn.config(state=tk.DISABLED)
             self.status_label.config(text="Analisando imagem... Aguarde...")
+        elif generating_pdf:
+            self.pdf_btn.config(state=tk.DISABLED)
+            self.analyze_btn.config(state=tk.DISABLED)
+            self.status_label.config(text="Gerando PDF... Aguarde...")
         elif analysis_complete:
             self.analyze_btn.config(state=tk.NORMAL)
             self.pdf_btn.config(state=tk.NORMAL)
             self.status_label.config(text="Análise concluída com sucesso!")
+        else:
+            # Estado padrão
+            self.analyze_btn.config(state=tk.NORMAL if self.current_image_path else tk.DISABLED)
+            self.pdf_btn.config(state=tk.NORMAL if self.controller.analyzer else tk.DISABLED)
 
     def show_error(self, title, message):
         """Exibe mensagem de erro"""
         messagebox.showerror(title, message)
+
+    def show_success(self, title, message):
+        """Exibe mensagem de sucesso"""
+        messagebox.showinfo(title, message)
 
     def run(self):
         """Inicia a interface gráfica"""

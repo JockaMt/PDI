@@ -666,9 +666,6 @@ class TornadoRiskAnalyzer:
         gradient = self.analyze_texture_patterns()
         self.detect_vortex_patterns()  # Nova detecção
 
-        # Debug das métricas detectadas
-        self.debug_metrics()
-
         # Calcula score de risco
         risk_score, risk_level = self.calculate_risk_score()
 
@@ -1125,3 +1122,9 @@ como guia principal de análise.
             plt.tight_layout(rect=[0, 0, 1, 0.96])
             pdf.savefig(fig, bbox_inches='tight')
             plt.close()
+        
+        # Verifica se arquivo foi criado
+        if not os.path.exists(output_path):
+            raise FileNotFoundError(f"Falha ao gerar PDF: arquivo não criado em {output_path}")
+        
+        return output_path
